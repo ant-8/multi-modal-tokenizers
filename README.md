@@ -2,7 +2,7 @@
 
 # Multi-Modal Tokenizers
 
-Multi-modal tokenizers for more than just text. This package provides tools for tokenizing and decoding images and mixed-modal inputs (text and images) using DALL-E and other models.
+Multi-modal tokenizers for more than just text. This package provides tools for tokenizing and decoding images and mixed-modal inputs (text and images) using the encoders like DALL-E's VAE.
 
 ## Installation
 
