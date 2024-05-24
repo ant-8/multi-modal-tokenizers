@@ -13,6 +13,12 @@ git clone https://github.com/anothy1/multi-modal-tokenizers
 pip install ./multi-modal-tokenizers
 ```
 
+Or from PyPI:
+
+```sh
+pip install multi-modal-tokenizers
+```
+
 ## Usage
 
 ### Example: Using DalleTokenizer
