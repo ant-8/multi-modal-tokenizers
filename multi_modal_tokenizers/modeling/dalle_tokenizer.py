@@ -6,11 +6,11 @@ from dall_e import unmap_pixels, Encoder, Decoder
 
 class DalleTokenizer(ImageTokenizer):
     def __init__(self, encoder, decoder, image_dim=192, downscale_factor=8):
-        self.encoder = encoder
-        self.decoder = decoder
         super(DalleTokenizer, self).__init__(
             image_dim, downscale_factor
         )
+        self.encoder = encoder
+        self.decoder = decoder
 
     def encode(self, image):
         from ..image_preprocessing import preprocess
