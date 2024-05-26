@@ -1,3 +1,3 @@
-from .base_tokenizers import DVAETokenizer, ImageTokenizer
-from .dalle_tokenizer import DalleTokenizer
-from .mixed_modal_tokenizer import MixedModalTokenizer
+from .modeling.base_tokenizers import DVAETokenizer, ImageTokenizer
+from .modeling.dalle_tokenizer import DalleTokenizer
+from .modeling.mixed_modal_tokenizer import MixedModalTokenizer

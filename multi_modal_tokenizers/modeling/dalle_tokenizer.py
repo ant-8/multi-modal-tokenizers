@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 import torchvision.transforms as T
 from .base_tokenizers import ImageTokenizer
-from .image_preprocessing import preprocess
+from ..image_preprocessing import preprocess
 from dall_e import unmap_pixels, Encoder, Decoder
 
 class DalleTokenizer(ImageTokenizer):
@@ -31,7 +31,7 @@ class DalleTokenizer(ImageTokenizer):
 
     @staticmethod
     def from_hf(repo_id):
-        from .utils import load_state_from_repo
+        from ..utils import load_state_from_repo
         state_dict, config = load_state_from_repo(repo_id)
         model = DalleTokenizer(
             encoder=Encoder(),
