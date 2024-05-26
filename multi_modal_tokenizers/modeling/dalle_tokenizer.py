@@ -2,7 +2,6 @@ import torch
 import torch.nn.functional as F
 import torchvision.transforms as T
 from .base_tokenizers import ImageTokenizer
-from multi_modal_tokenizers.image_preprocessing import preprocess
 from dall_e import unmap_pixels, Encoder, Decoder
 
 class DalleTokenizer(ImageTokenizer):
@@ -14,6 +13,7 @@ class DalleTokenizer(ImageTokenizer):
         )
 
     def encode(self, image):
+        from ..image_preprocessing import preprocess
         x = preprocess(image, self.image_dim).to(self.encoder.device)
         z_logits = self.encoder(x)
         ids = torch.argmax(z_logits, axis=1).flatten()
