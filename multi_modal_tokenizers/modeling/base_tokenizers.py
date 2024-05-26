@@ -15,8 +15,8 @@ class DVAETokenizer(torch.nn.Module):
         raise NotImplementedError
 
 class ImageTokenizer(DVAETokenizer):
-    def __init__(self, encoder, decoder, image_dim, downscale_factor):
-        super(ImageTokenizer, self).__init__(encoder, decoder)
+    def __init__(self, image_dim, downscale_factor):
+        super(ImageTokenizer, self).__init__()
         self.image_dim = image_dim
         self.downscale_factor = downscale_factor
 

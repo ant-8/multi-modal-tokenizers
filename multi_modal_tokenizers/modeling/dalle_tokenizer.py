@@ -10,7 +10,6 @@ class DalleTokenizer(ImageTokenizer):
         self.encoder = encoder
         self.decoder = decoder
         super(DalleTokenizer, self).__init__(
-            encoder, decoder, 
             image_dim, downscale_factor
         )
 
