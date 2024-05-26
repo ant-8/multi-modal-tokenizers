@@ -2,7 +2,15 @@ import torch
 from warnings import warn
 
 class MixedModalTokenizer:
-    def __init__(self, text_tokenizer, image_tokenizer, device='cpu'):
+    def __init__(
+            self,
+            text_tokenizer,
+            image_tokenizer,
+            new_image_tag = "<new_image>",
+            image_start_tag = "<image_start>",
+            image_end_tag = "<image_end>",
+            device='cpu'
+        ):
         self.text_tokenizer = text_tokenizer
         self.image_tokenizer = image_tokenizer
         self.device = device
@@ -11,7 +19,7 @@ class MixedModalTokenizer:
         self.num_tokens_per_image = (image_tokenizer.image_dim // image_tokenizer.downscale_factor) ** 2
         
         # Extend the text tokenizer vocabulary to handle image tokens
-        new_tokens = ["<new_image>", "<image_start>", "<image_end>"]
+        new_tokens = [new_image_tag, image_start_tag, image_end_tag]
         text_tokenizer.add_tokens(new_tokens)
         self.image_placement_id, self.image_start_id, self.image_end_id = [
             text_tokenizer.convert_tokens_to_ids(token) for token in new_tokens
