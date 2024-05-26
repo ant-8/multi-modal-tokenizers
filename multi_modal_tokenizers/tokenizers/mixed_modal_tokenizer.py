@@ -1,87 +1,84 @@
 import torch
 from warnings import warn
 
-class MixedModalTokenizer():
-    def __init__(
-        self, 
-        text_tokenizer,
-        image_tokenizer,
-        device="cpu"  # This is only for image_tokenizer
-    ):
+class MixedModalTokenizer:
+    def __init__(self, text_tokenizer, image_tokenizer, device='cpu'):
         self.text_tokenizer = text_tokenizer
         self.image_tokenizer = image_tokenizer
-        self.num_tokens_per_image = (image_tokenizer.image_dim // image_tokenizer.downscale_factor) ** 2
         self.device = device
+
+        # Calculate tokens per image based on the tokenizer's properties
+        self.num_tokens_per_image = (image_tokenizer.image_dim // image_tokenizer.downscale_factor) ** 2
         
-        self.original_vocab_size = len(text_tokenizer)
-        text_tokenizer.add_tokens(["<new_image>", "<image_start>", "<image_end>"])
-        self.image_placement_id = text_tokenizer.convert_tokens_to_ids("<new_image>")
-        self.image_start_id = text_tokenizer.convert_tokens_to_ids("<image_start>")
-        self.image_end_id = text_tokenizer.convert_tokens_to_ids("<image_end>")
+        # Extend the text tokenizer vocabulary to handle image tokens
+        new_tokens = ["<new_image>", "<image_start>", "<image_end>"]
+        text_tokenizer.add_tokens(new_tokens)
+        self.image_placement_id, self.image_start_id, self.image_end_id = [
+            text_tokenizer.convert_tokens_to_ids(token) for token in new_tokens
+        ]
         self.image_id_offset = len(text_tokenizer)
 
     def encode(self, text="", images=[]):
         encoded_text = self.text_tokenizer.encode(text)
         if encoded_text.count(self.image_placement_id) != len(images):
-            raise ValueError("The number of <new_image> tags in the text does not match the number of images provided.")
-        if len(images) == 0:
-            return encoded_text
-   
-        encoded_images = [ [x + self.image_id_offset for x in self.image_tokenizer.encode(img).cpu().tolist()] for img in images]
+            raise ValueError("Mismatch between <new_image> tags in text and provided images.")
 
-        i = 0
-        k = 0
-        while i < len(encoded_text):
-            if encoded_text[i] == self.image_placement_id:
-                encoded_text = encoded_text[:i] + [self.image_start_id] + encoded_images[k] + [self.image_end_id] + encoded_text[i+1:]
-                k += 1
-            i += 1
-        return encoded_text
+        if not images:
+            return encoded_text
+
+        # Encode images and adjust token IDs with offset
+        encoded_images = [
+            [x + self.image_id_offset for x in self.image_tokenizer.encode(img).to('cpu').tolist()]
+            for img in images
+        ]
+
+        # Inject image encodings into the text at specified positions
+        result = []
+        image_idx = 0
+        for token in encoded_text:
+            if token == self.image_placement_id and image_idx < len(encoded_images):
+                result.extend([self.image_start_id] + encoded_images[image_idx] + [self.image_end_id])
+                image_idx += 1
+            else:
+                result.append(token)
+
+        return result
 
     def decode(self, input_ids, suppress_warnings=False):
-        images = []
-        i = 0
+        images, buf = [], []
         scanning_image = False
-        buf = []
-        def write_buf_to_images():
+
+        def process_image_buffer():
             nonlocal buf
             if len(buf) > self.num_tokens_per_image:
-                if suppress_warnings is False:
-                    warn(f"Image token sequence is longer than expected length ({self.num_tokens_per_image}). It will be truncated.")
+                if not suppress_warnings:
+                    warn(f"Image token sequence longer than expected ({self.num_tokens_per_image}). Truncating.")
                 buf = buf[:self.num_tokens_per_image]
             elif len(buf) < self.num_tokens_per_image:
-                if suppress_warnings is False:
-                    warn(f"Image token sequence is shorter than expected length ({self.num_tokens_per_image}). It will be padded to work but the image will be incomplete.")
-                buf = buf + ([self.image_id_offset] * (self.num_tokens_per_image - len(buf)))
-            
-            images.append(
-                self.image_tokenizer.decode(torch.tensor(buf, device=self.device))
-            )
+                if not suppress_warnings:
+                    warn(f"Image token sequence shorter than expected ({self.num_tokens_per_image}). Padding.")
+                buf += [self.image_id_offset] * (self.num_tokens_per_image - len(buf))
+            images.append(self.image_tokenizer.decode(torch.tensor(buf, device=self.device)))
             buf = []
-        while i < len(input_ids):
-            id = input_ids[i]
+
+        # Process the encoded token IDs to extract text and images
+        for id in input_ids:
             if id == self.image_start_id:
-                if not scanning_image:
-                    scanning_image = True
-                else:
-                    warn(f"Another image start tag detected before the previous one closed. Ignoring.")
-            elif id == self.image_end_id:
+                if scanning_image:
+                    warn("Nested <image_start> tag found. Ignoring.")
+                scanning_image = True
+            elif id == self.image_end_id and scanning_image:
                 scanning_image = False
-                write_buf_to_images()
+                process_image_buffer()
             elif scanning_image:
                 image_id = id - self.image_id_offset
-                if image_id < 0:
-                    if suppress_warnings is False:
-                        warn(f"Read an invalid token id ({image_id}) within an image context. Ignoring.")
-                else:
+                if image_id >= 0:
                     buf.append(image_id)
-            i += 1
-
-        filtered_ids = []
-        for x in input_ids:
-            if x >= self.image_id_offset or x == self.image_placement_id or x == self.image_start_id or x == self.image_end_id:
-                continue
-            filtered_ids.append(x)
-
+                elif not suppress_warnings:
+                    warn(f"Invalid token id ({image_id}) within image context. Ignoring.")
+        
+        # Remove image related IDs and decode text
+        filtered_ids = [id for id in input_ids if id < self.image_id_offset and id not in {self.image_placement_id, self.image_start_id, self.image_end_id}]
         decoded_text = self.text_tokenizer.decode(filtered_ids)
+
         return decoded_text, images
