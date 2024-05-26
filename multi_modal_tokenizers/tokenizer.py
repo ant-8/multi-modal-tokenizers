@@ -35,10 +35,8 @@ def preprocess(img, target_image_size):
     return map_pixels(img)
 
 class DVAETokenizer(torch.nn.Module):
-    def __init__(self, encoder, decoder):
+    def __init__(self):
         super(DVAETokenizer, self).__init__()
-        self.encoder = encoder
-        self.decoder = decoder
 
     def encode(self, image):
         raise NotImplementedError
@@ -61,6 +59,8 @@ class ImageTokenizer(DVAETokenizer):
 
 class DalleTokenizer(ImageTokenizer):
     def __init__(self, encoder, decoder, image_dim=192, downscale_factor=8):
+        self.encoder = encoder
+        self.decoder = decoder
         super(DalleTokenizer, self).__init__(
             encoder, decoder, 
             image_dim, downscale_factor
