@@ -6,8 +6,6 @@ Multi-modal tokenizers for more than just text. This package provides tools for 
 
 ## Installation
 
-To install the package, clone the repository and use pip to install it:
-
 ```sh
 pip install git+https://github.com/anothy1/multi-modal-tokenizers
 ```
