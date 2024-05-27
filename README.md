@@ -9,8 +9,7 @@ Multi-modal tokenizers for more than just text. This package provides tools for 
 To install the package, clone the repository and use pip to install it:
 
 ```sh
-git clone https://github.com/anothy1/multi-modal-tokenizers
-pip install ./multi-modal-tokenizers
+pip install git+https://github.com/anothy1/multi-modal-tokenizers
 ```
 
 Or from PyPI:
