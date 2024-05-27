@@ -74,7 +74,7 @@ mixed_tokenizer = MixedModalTokenizer(
 )
 
 # Example usage
-text = "This is an example with <new_image> in the middle."
+text = "This is an example with <image> in the middle."
 img_path = "path/to/your/image.jpg"
 image = Image.open(img_path)
 

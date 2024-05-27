@@ -6,7 +6,7 @@ class MixedModalTokenizer:
             self,
             text_tokenizer,
             image_tokenizer,
-            new_image_tag = "<new_image>",
+            new_image_tag = "<image>",
             image_start_tag = "<image_start>",
             image_end_tag = "<image_end>",
             device='cpu'
@@ -29,7 +29,7 @@ class MixedModalTokenizer:
     def encode(self, text="", images=[]):
         encoded_text = self.text_tokenizer.encode(text)
         if encoded_text.count(self.image_placement_id) != len(images):
-            raise ValueError("Mismatch between <new_image> tags in text and provided images.")
+            raise ValueError("Mismatch between <image> tags in text and provided images.")
 
         if not images:
             return encoded_text

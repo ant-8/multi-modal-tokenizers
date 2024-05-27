@@ -37,7 +37,7 @@ def test_mixed_modal_tokenizer_encode_decode(text_tokenizer, dalle_tokenizer):
         image_tokenizer=dalle_tokenizer,
     )
 
-    text = "This is an example with <new_image> in the middle."
+    text = "This is an example with <image> in the middle."
     img_url = 'https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iKIWgaiJUtss/v2/1000x-1.jpg'
     image = download_image(img_url)
 
