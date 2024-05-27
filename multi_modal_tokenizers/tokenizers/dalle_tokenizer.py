@@ -6,12 +6,13 @@ from ..image_processing import preprocess
 from dall_e import unmap_pixels, Encoder, Decoder
 
 class DalleTokenizer(ImageTokenizer):
-    def __init__(self, encoder, decoder, image_dim=192, downscale_factor=8):
+    def __init__(self, encoder, decoder, image_dim=192, downscale_factor=8, codebook_size=8192):
         super(DalleTokenizer, self).__init__(
             image_dim, downscale_factor
         )
         self.encoder = encoder
         self.decoder = decoder
+        self.codebook_size = codebook_size
 
     def encode(self, image):
         x = preprocess(image, self.image_dim).to(self.encoder.device)
@@ -27,6 +28,9 @@ class DalleTokenizer(ImageTokenizer):
         x_rec = unmap_pixels(torch.sigmoid(x_stats[:, :3]))
         x_rec = T.ToPILImage(mode='RGB')(x_rec[0])
         return x_rec
+    
+    def __len__(self):
+        return self.codebook_size
 
     @staticmethod
     def from_hf(repo_id):

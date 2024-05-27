@@ -26,6 +26,9 @@ class MixedModalTokenizer:
         ]
         self.image_id_offset = len(text_tokenizer)
 
+    def __len__(self):
+        return len(self.text_tokenizer) + len(self.image_tokenizer)
+
     def encode(self, text="", images=[]):
         encoded_text = self.text_tokenizer.encode(text)
         if encoded_text.count(self.image_placement_id) != len(images):

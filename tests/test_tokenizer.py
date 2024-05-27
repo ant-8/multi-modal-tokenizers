@@ -30,6 +30,7 @@ def test_dalle_tokenizer_encode_decode(dalle_tokenizer):
     # Decode the tokens back to an image
     reconstructed = dalle_tokenizer.decode(tokens)
     assert isinstance(reconstructed, Image.Image), "Reconstructed image should be a PIL Image"
+    assert len(dalle_tokenizer) == 8192, "__len__ Mismatch"
 
 def test_mixed_modal_tokenizer_encode_decode(text_tokenizer, dalle_tokenizer):
     mixed_tokenizer = MixedModalTokenizer(
@@ -49,3 +50,4 @@ def test_mixed_modal_tokenizer_encode_decode(text_tokenizer, dalle_tokenizer):
     decoded_text, decoded_images = mixed_tokenizer.decode(encoded)
     assert isinstance(decoded_text, str), "Decoded text should be a string"
     assert all(isinstance(img, Image.Image) for img in decoded_images), "Decoded images should be PIL Images"
+    assert len(mixed_tokenizer) == len(text_tokenizer) + len(dalle_tokenizer), "__len__ Mismatch"

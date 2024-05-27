@@ -9,6 +9,9 @@ class DVAETokenizer(torch.nn.Module):
 
     def decode(self, input_ids):
         raise NotImplementedError
+    
+    def __len__(self):
+        raise NotImplementedError
 
     @staticmethod
     def from_hf(repo_id):
