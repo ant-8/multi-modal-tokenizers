@@ -22,6 +22,3 @@ class ImageTokenizer(DVAETokenizer):
         super(ImageTokenizer, self).__init__()
         self.image_dim = image_dim
         self.downscale_factor = downscale_factor
-
-    def set_image_dim(self, new_dim):
-        self.image_dim = new_dim

@@ -32,6 +32,10 @@ class MixedModalTokenizer:
         ]
         self.image_id_offset = len(text_tokenizer)
 
+    def set_image_dim(self, dim):
+        self.image_tokenizer.image_dim = dim
+        self.num_tokens_per_image = (self.image_tokenizer.image_dim // self.image_tokenizer.downscale_factor) ** 2
+
     def __len__(self):
         return len(self.text_tokenizer) + len(self.image_tokenizer)
 
