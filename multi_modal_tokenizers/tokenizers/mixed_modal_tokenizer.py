@@ -6,7 +6,7 @@ class MixedModalTokenizer:
             self,
             text_tokenizer,
             image_tokenizer,
-            new_image_tag = "<image>",
+            image_placement_tag = "<image>",
             image_start_tag = "<image_start>",
             image_end_tag = "<image_end>",
             device='cpu'
@@ -19,10 +19,16 @@ class MixedModalTokenizer:
         self.num_tokens_per_image = (image_tokenizer.image_dim // image_tokenizer.downscale_factor) ** 2
         
         # Extend the text tokenizer vocabulary to handle image tokens
-        new_tokens = [new_image_tag, image_start_tag, image_end_tag]
-        text_tokenizer.add_tokens(new_tokens)
+        new_tokens = {
+            'additional_special_tokens': [
+                image_placement_tag, 
+                image_start_tag, 
+                image_end_tag
+            ]
+        }
+        text_tokenizer.add_special_tokens(new_tokens)
         self.image_placement_id, self.image_start_id, self.image_end_id = [
-            text_tokenizer.convert_tokens_to_ids(token) for token in new_tokens
+            text_tokenizer.convert_tokens_to_ids(token) for token in new_tokens['additional_special_tokens']
         ]
         self.image_id_offset = len(text_tokenizer)
 
