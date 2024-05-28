@@ -75,8 +75,8 @@ class MixedModalTokenizer:
         if not images:
             return encoded_text
         
-        def _encode_image(img):
-            result = self.image_tokenizer.encode(img).to('cpu').tolist()
+        def _wrap_encoded(img):
+            result = img
             if self.wrap_rows:
                 result = split_into_chunks(result, self.image_tokenizer.image_dim // self.image_tokenizer.downscale_factor)
                 for i in range(len(result)):
@@ -88,7 +88,7 @@ class MixedModalTokenizer:
         
         # Encode images and adjust token IDs with offset
         encoded_images = [
-            [x + self.image_id_offset for x in _encode_image(img)]
+            [x + self.image_id_offset for x in self.image_tokenizer.encode(img).to('cpu').tolist()]
             for img in images
         ]
 
@@ -97,7 +97,7 @@ class MixedModalTokenizer:
         image_idx = 0
         for token in encoded_text:
             if token == self.image_placement_id and image_idx < len(encoded_images):
-                result.extend([self.image_start_id] + encoded_images[image_idx] + [self.image_end_id])
+                result.extend([self.image_start_id] + _wrap_encoded(encoded_images[image_idx]) + [self.image_end_id])
                 image_idx += 1
             else:
                 result.append(token)
