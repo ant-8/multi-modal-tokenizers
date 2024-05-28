@@ -66,8 +66,7 @@ text_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 # Create a MixedModalTokenizer
 mixed_tokenizer = MixedModalTokenizer(
     text_tokenizer=text_tokenizer,
-    image_tokenizer=image_tokenizer,
-    device="cpu"
+    image_tokenizer=image_tokenizer
 )
 
 # Example usage

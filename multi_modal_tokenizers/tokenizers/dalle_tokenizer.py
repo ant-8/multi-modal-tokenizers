@@ -15,7 +15,7 @@ class DalleTokenizer(ImageTokenizer):
         self.codebook_size = codebook_size
 
     def encode(self, image):
-        x = preprocess(image, self.image_dim).to(self.encoder.device)
+        x = preprocess(image, self.image_dim)
         z_logits = self.encoder(x)
         ids = torch.argmax(z_logits, axis=1).flatten()
         return ids
