@@ -46,6 +46,10 @@ def test_mixed_modal_tokenizer_encode_decode(text_tokenizer, dalle_tokenizer):
     encoded = mixed_tokenizer.encode(text=text, images=[image])
     assert isinstance(encoded, list), "Encoded result should be a list"
 
+    for i in range(dalle_tokenizer.image_dim // dalle_tokenizer.downscale_factor):
+        assert encoded.count(text_tokenizer.convert_tokens_to_ids(f"<row_{i}_start>")) == 0
+        assert encoded.count(text_tokenizer.convert_tokens_to_ids(f"<row_{i}_end>")) == 0
+
     # Decode the sequence back to text and image
     decoded_text, decoded_images = mixed_tokenizer.decode(encoded)
     assert isinstance(decoded_text, str), "Decoded text should be a string"
@@ -66,6 +70,10 @@ def test_mixed_modal_tokenizer_encode_decode_wrap(text_tokenizer, dalle_tokenize
     # Encode the text and image
     encoded = mixed_tokenizer.encode(text=text, images=[image])
     assert isinstance(encoded, list), "Encoded result should be a list"
+
+    for i in range(dalle_tokenizer.image_dim // dalle_tokenizer.downscale_factor):
+        assert encoded.count(text_tokenizer.convert_tokens_to_ids(f"<row_{i}_start>")) == 1
+        assert encoded.count(text_tokenizer.convert_tokens_to_ids(f"<row_{i}_end>")) == 1
 
     # Decode the sequence back to text and image
     decoded_text, decoded_images = mixed_tokenizer.decode(encoded)
