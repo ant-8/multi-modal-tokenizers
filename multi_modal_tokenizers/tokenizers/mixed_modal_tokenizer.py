@@ -132,7 +132,7 @@ class MixedModalTokenizer:
                 process_image_buffer()
             elif scanning_image:
                 image_id = id - self.image_id_offset
-                if image_id in self.row_wrap_ids: continue
+                if id in self.row_wrap_ids: continue
                 if image_id >= 0:
                     buf.append(image_id)
                 elif not suppress_warnings:
