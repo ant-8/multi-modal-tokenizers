@@ -139,7 +139,7 @@ class MixedModalTokenizer:
                     warn(f"Invalid token id ({image_id}) within image context. Ignoring.")
         
         # Remove image related IDs and decode text
-        filtered_ids = [id for id in input_ids if id < self.image_id_offset and id not in {self.image_placement_id, self.image_start_id, self.image_end_id} and id not in self.row_wrap_ids]
+        filtered_ids = [id for id in input_ids if id < self.image_id_offset and (id not in [self.image_placement_id, self.image_start_id, self.image_end_id]) and (id not in self.row_wrap_ids)]
         decoded_text = self.text_tokenizer.decode(filtered_ids)
 
         return decoded_text, images
