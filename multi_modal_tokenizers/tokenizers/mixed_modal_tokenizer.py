@@ -53,7 +53,7 @@ class MixedModalTokenizer:
             self.row_wrap_ids = []
 
     def set_image_dim(self, dim):
-        warn("The set_image_dim() function is deprecated due to stability issues and will be removed. Instead, initialize a new ImageTokenizer with the correct image_dim first, followed by a new MixedModalTokenizer to ensure proper functionality.")
+        warn("MixedModalTokenizer.set_image_dim() is deprecated and will be removed. Instead, initialize a new ImageTokenizer with the correct image_dim first, followed by a new MixedModalTokenizer to ensure proper functionality.")
         self.image_tokenizer.image_dim = dim
         self.num_tokens_per_image = (self.image_tokenizer.image_dim // self.image_tokenizer.downscale_factor) ** 2
 
