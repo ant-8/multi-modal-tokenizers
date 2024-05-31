@@ -33,14 +33,18 @@ class DalleTokenizer(ImageTokenizer):
         return self.codebook_size
 
     @staticmethod
-    def from_hf(repo_id):
+    def from_hf(repo_id, kwargs={}):
         from ..utils import load_state_from_repo
         state_dict, config = load_state_from_repo(repo_id)
-        model = DalleTokenizer(
-            encoder=Encoder(),
-            decoder=Decoder(),
-            image_dim=config['image_dim'],
-            downscale_factor=config['downscale_factor']
-        )
+        default_kwargs = {
+            "encoder": Encoder(),
+            "decoder": Decoder(),
+            "image_dim": config['image_dim'],
+            "downscale_factor": config['downscale_factor'],
+        }
+        override_kwargs = default_kwargs.copy()
+        for key in kwargs.keys():
+            override_kwargs[key] = kwargs[key]
+        model = DalleTokenizer(**override_kwargs)
         model.load_state_dict(state_dict)
         return model

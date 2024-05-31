@@ -17,9 +17,10 @@ def text_tokenizer():
 
 @pytest.fixture
 def dalle_tokenizer():
-    return DalleTokenizer.from_hf("anothy1/dalle-tokenizer")
+    return DalleTokenizer.from_hf("anothy1/dalle-tokenizer", kwargs={'image_dim': 128})
 
 def test_dalle_tokenizer_encode_decode(dalle_tokenizer):
+    assert dalle_tokenizer.image_dim == 128, "Incorrect dalle tokenizer image_dim"
     img_url = 'https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iKIWgaiJUtss/v2/1000x-1.jpg'
     img = download_image(img_url)
 
