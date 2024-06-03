@@ -23,7 +23,7 @@ def test_dalle_tokenizer_encode_decode(dalle_tokenizer):
     assert dalle_tokenizer.image_dim == 128, "Incorrect dalle tokenizer image_dim"
     img_url = 'https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iKIWgaiJUtss/v2/1000x-1.jpg'
     img = download_image(img_url)
-
+    assert dalle_tokenizer.device == "cpu"
     # Encode the image
     tokens = dalle_tokenizer.encode(img)
     assert isinstance(tokens, torch.Tensor), "Encoded tokens should be a torch.Tensor"

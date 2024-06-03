@@ -6,16 +6,17 @@ from ..image_processing import preprocess
 from dall_e import unmap_pixels, Encoder, Decoder
 
 class DalleTokenizer(ImageTokenizer):
-    def __init__(self, encoder, decoder, image_dim=192, downscale_factor=8, codebook_size=8192):
+    def __init__(self, encoder, decoder, image_dim=192, downscale_factor=8, codebook_size=8192, device="cpu"):
         super(DalleTokenizer, self).__init__(
             image_dim, downscale_factor
         )
-        self.encoder = encoder
-        self.decoder = decoder
+        self.encoder = encoder.to(device)
+        self.decoder = decoder.to(device)
+        self.device = device
         self.codebook_size = codebook_size
 
     def encode(self, image):
-        x = preprocess(image, self.image_dim)
+        x = preprocess(image, self.image_dim).to(self.device)
         z_logits = self.encoder(x)
         ids = torch.argmax(z_logits, axis=1).flatten()
         return ids

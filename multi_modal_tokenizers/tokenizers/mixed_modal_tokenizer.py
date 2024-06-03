@@ -18,7 +18,8 @@ class MixedModalTokenizer:
             image_placement_tag = "<image>",
             image_start_tag = "<image_start>",
             image_end_tag = "<image_end>",
-            wrap_rows=False
+            wrap_rows=False,
+            num_rows=None
         ):
         self.text_tokenizer = text_tokenizer
         self.image_tokenizer = image_tokenizer
@@ -37,7 +38,9 @@ class MixedModalTokenizer:
         }
 
         if self.wrap_rows:
-            for i in range(self.image_tokenizer.image_dim):
+            if num_rows is None:
+                num_rows = self.image_tokenizer.image_dim
+            for i in range(num_rows):
                 new_tokens['additional_special_tokens'] += [f"<row_{i}_start>", f"<row_{i}_end>"]
 
         text_tokenizer.add_special_tokens(new_tokens)
