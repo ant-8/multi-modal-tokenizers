@@ -1,7 +1,7 @@
 import pytest
 import torch
 from transformers import AutoTokenizer
-from multi_modal_tokenizers import DalleTokenizer, MixedModalTokenizer
+from multi_modal_tokenizers import DalleTokenizer, MixedModalTokenizer, preprocess
 from PIL import Image
 import requests
 import io
@@ -25,7 +25,8 @@ def test_dalle_tokenizer_encode_decode(dalle_tokenizer):
     img = download_image(img_url)
     assert dalle_tokenizer.device == "cpu"
     # Encode the image
-    tokens = dalle_tokenizer.encode(img)
+    pixel_map = preprocess(img, 128)
+    tokens = dalle_tokenizer.encode_pixels(pixel_map)
     assert isinstance(tokens, torch.Tensor), "Encoded tokens should be a torch.Tensor"
 
     # Decode the tokens back to an image

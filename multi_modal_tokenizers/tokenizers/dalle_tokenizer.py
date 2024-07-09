@@ -22,6 +22,11 @@ class DalleTokenizer(ImageTokenizer):
         ids = torch.argmax(z_logits, axis=1).flatten()
         return ids
 
+    def encode_pixels(self, x):
+        z_logits = self.encoder(x)
+        ids = torch.argmax(z_logits, axis=1).flatten()
+        return ids
+
     def decode(self, input_ids):
         grid_dim = self.image_dim // self.downscale_factor
         input_ids = input_ids.view((1, grid_dim, grid_dim))
