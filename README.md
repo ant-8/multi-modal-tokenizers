@@ -7,7 +7,7 @@ Multi-modal tokenizers for more than just text. This package provides tools for 
 ## Installation
 
 ```sh
-pip install git+https://github.com/anothy1/multi-modal-tokenizers
+pip install git+https://github.com/ant-8/multi-modal-tokenizers
 ```
 
 Or from PyPI:
