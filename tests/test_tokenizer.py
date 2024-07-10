@@ -1,7 +1,7 @@
 import pytest
 import torch
 from transformers import AutoTokenizer
-from multi_modal_tokenizers import DalleTokenizer, MixedModalTokenizer, preprocess
+from multi_modal_tokenizers import DalleTokenizer, MixedModalTokenizer, preprocess, ChameleonTokenizer
 from PIL import Image
 import requests
 import io
@@ -18,6 +18,20 @@ def text_tokenizer():
 @pytest.fixture
 def dalle_tokenizer():
     return DalleTokenizer.from_hf("anothy1/dalle-tokenizer", kwargs={'image_dim': 128})
+
+@pytest.fixture
+def chameleon_tokenizer():
+    return ChameleonTokenizer.from_hf("eastwind/meta-chameleon-7b", kwargs={'image_dim': 128})
+
+def test_chameleon_tokenizer_encode_decode(chameleon_tokenizer):
+    img_url = 'https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iKIWgaiJUtss/v2/1000x-1.jpg'
+    img = download_image(img_url)
+    tokens = chameleon_tokenizer.encode(img)
+    assert isinstance(tokens, torch.Tensor), "Encoded tokens should be a torch.Tensor"
+
+    # Decode the tokens back to an image
+    reconstructed = chameleon_tokenizer.decode(tokens)
+    assert isinstance(reconstructed, Image.Image), "Reconstructed image should be a PIL Image"
 
 def test_dalle_tokenizer_encode_decode(dalle_tokenizer):
     assert dalle_tokenizer.image_dim == 128, "Incorrect dalle tokenizer image_dim"
